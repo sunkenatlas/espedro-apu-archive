@@ -1,0 +1,510 @@
+:root {
+  --bg-void: #080907;
+  --bg-desk: #0d0e0b;
+  --bg-surface: #131410;
+  --bg-elevated: #191b16;
+  --bg-inset: #0a0b09;
+
+  --ink-primary: #ebe2ce;
+  --ink-secondary: #b6ac97;
+  --ink-muted: #7f796c;
+  --ink-faint: #575248;
+
+  --line-hairline: rgba(235, 226, 206, 0.1);
+  --line-mid: rgba(235, 226, 206, 0.18);
+  --line-strong: rgba(235, 226, 206, 0.34);
+
+  --strobe-red: #c43f35;
+  --strobe-red-soft: rgba(196, 63, 53, 0.16);
+  --strobe-blue: #4686b5;
+  --strobe-blue-soft: rgba(70, 134, 181, 0.14);
+  --amber: #cfa049;
+  --amber-soft: rgba(207, 160, 73, 0.14);
+
+  --risk-b: #839c65;
+  --risk-c: #d3a041;
+  --risk-d: #cd4d40;
+  --risk-e: #e65249;
+  --risk-x: #ebe2ce;
+
+  --font-serif: 'Noto Serif SC', 'Songti SC', 'STSong', 'SimSun', Georgia, serif;
+  --font-sans: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', system-ui, -apple-system, sans-serif;
+  --font-mono: 'IBM Plex Mono', 'Consolas', 'Courier New', monospace;
+
+  --ease-editorial: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-snap: cubic-bezier(0.16, 1, 0.3, 1);
+
+  --header-h: 64px;
+  --container-max: 1460px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  color-scheme: dark;
+  background-color: var(--bg-void);
+  color: var(--ink-primary);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  background-color: var(--bg-void);
+  background-image:
+    linear-gradient(rgba(235, 226, 206, 0.022) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(235, 226, 206, 0.022) 1px, transparent 1px);
+  background-size: 36px 36px;
+  background-position: -1px -1px;
+  color: var(--ink-primary);
+  line-height: 1.65;
+  overflow-x: clip;
+}
+
+::selection {
+  background: rgba(196, 63, 53, 0.38);
+  color: var(--ink-primary);
+}
+
+/* Custom restrained scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-void);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(235, 226, 206, 0.16);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(235, 226, 206, 0.3);
+}
+
+/* Focus indicators */
+:focus-visible {
+  outline: 1px solid var(--amber);
+  outline-offset: 2px;
+}
+
+button,
+input,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+/* ==========================================================================
+   Ambient Layer: Restrained E-City Red/Blue Strobe Glow + Analog Film Grain
+   ========================================================================== */
+.ambient-atmosphere {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.ambient-strobe-red,
+.ambient-strobe-blue {
+  position: absolute;
+  width: min(62vw, 760px);
+  height: min(62vw, 760px);
+  border-radius: 50%;
+  filter: blur(110px);
+  will-change: opacity, transform;
+}
+
+.ambient-strobe-red {
+  top: -280px;
+  left: -200px;
+  background: radial-gradient(circle, rgba(196, 63, 53, 0.16) 0%, rgba(196, 63, 53, 0) 70%);
+  opacity: 0.45;
+}
+
+.ambient-strobe-blue {
+  top: -260px;
+  right: -200px;
+  background: radial-gradient(circle, rgba(70, 134, 181, 0.14) 0%, rgba(70, 134, 181, 0) 70%);
+  opacity: 0.45;
+}
+
+.ambient-vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 25%, transparent 45%, rgba(4, 5, 4, 0.72) 100%);
+}
+
+/* Subtle SVG fractal grain overlay */
+.ambient-grain {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 40;
+  opacity: 0.032;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 220 220' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Opt-in ambient animations strictly under prefers-reduced-motion: no-preference */
+@media (prefers-reduced-motion: no-preference) {
+  [data-fx='full'] .ambient-strobe-red {
+    animation: strobe-breathe-red 11s ease-in-out infinite;
+  }
+  [data-fx='full'] .ambient-strobe-blue {
+    animation: strobe-breathe-blue 11s ease-in-out infinite;
+  }
+  [data-fx='full'] .fx-faraday-frame::after {
+    animation: faraday-flicker 5.5s ease-in-out infinite;
+  }
+  [data-fx='full'] .fx-radiant-halo {
+    animation: radiant-breathe 6.5s ease-in-out infinite;
+  }
+  [data-fx='full'] .fx-hyaline-shimmer::after {
+    animation: hyaline-sweep 8s linear infinite;
+  }
+  [data-fx='full'] .hazard-pulse-ring {
+    animation: hazard-ring 3.6s ease-in-out infinite;
+  }
+}
+
+@keyframes strobe-breathe-red {
+  0%, 100% { opacity: 0.34; transform: translate3d(0, 0, 0) scale(1); }
+  50% { opacity: 0.76; transform: translate3d(18px, 12px, 0) scale(1.06); }
+}
+
+@keyframes strobe-breathe-blue {
+  0%, 100% { opacity: 0.72; transform: translate3d(0, 0, 0) scale(1.05); }
+  50% { opacity: 0.28; transform: translate3d(-16px, 10px, 0) scale(0.98); }
+}
+
+@keyframes faraday-flicker {
+  0%, 92%, 100% { opacity: 0.08; }
+  94% { opacity: 0.38; }
+  96% { opacity: 0.14; }
+  98% { opacity: 0.32; }
+}
+
+@keyframes radiant-breathe {
+  0%, 100% { opacity: 0.32; transform: scale(0.98); }
+  50% { opacity: 0.62; transform: scale(1.03); }
+}
+
+@keyframes hyaline-sweep {
+  0% { transform: translateX(-110%) skewX(-18deg); }
+  100% { transform: translateX(220%) skewX(-18deg); }
+}
+
+@keyframes hazard-ring {
+  0%, 100% { opacity: 0.4; transform: scale(1); }
+  50% { opacity: 0.85; transform: scale(1.04); }
+}
+
+/* ==========================================================================
+   Native <dialog> Modern Web Guidance Rules
+   - Never set display unconditionally on dialog; scope to dialog[open]
+   - Prevent background scroll purely with overscroll-behavior on dialog & backdrop
+   ========================================================================== */
+dialog {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--ink-primary);
+  max-width: none;
+  max-height: none;
+}
+
+dialog:modal {
+  overscroll-behavior: contain;
+}
+
+dialog::backdrop {
+  overflow: hidden;
+  overscroll-behavior: contain;
+  background: rgba(5, 6, 5, 0.84);
+  backdrop-filter: blur(8px);
+}
+
+/* ==========================================================================
+   App Shell & Header
+   ========================================================================== */
+.app-shell {
+  position: relative;
+  z-index: 1;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+.apu-header {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  height: var(--header-h);
+  background: rgba(9, 10, 8, 0.86);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--line-hairline);
+}
+
+.apu-header-inner {
+  max-width: var(--container-max);
+  height: 100%;
+  margin: 0 auto;
+  padding: 0 clamp(16px, 3vw, 36px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.apu-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  background: none;
+  border: none;
+  padding: 4px 0;
+  text-align: left;
+  transition: opacity 0.2s ease;
+}
+.apu-brand:hover {
+  opacity: 0.88;
+}
+
+.apu-brand-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.apu-brand-top {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.apu-live-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--strobe-red);
+  box-shadow: 0 0 8px var(--strobe-red);
+}
+
+.apu-brand-title {
+  font-family: var(--font-serif);
+  font-weight: 700;
+  font-size: 16px;
+  letter-spacing: 0.08em;
+  color: var(--ink-primary);
+  line-height: 1.2;
+}
+
+.apu-nav {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px;
+  background: rgba(235, 226, 206, 0.03);
+  border: 1px solid var(--line-hairline);
+}
+
+.apu-nav-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 14px;
+  border: 0;
+  background: transparent;
+  color: var(--ink-secondary);
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  transition: color 0.2s ease, background-color 0.2s ease;
+}
+
+.apu-nav-btn:hover {
+  color: var(--ink-primary);
+}
+
+.apu-nav-btn[aria-current='page'] {
+  color: var(--ink-primary);
+  background: rgba(235, 226, 206, 0.08);
+}
+
+.apu-nav-btn[aria-current='page']::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -4px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--strobe-red), var(--strobe-blue));
+}
+
+.apu-utilities {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.util-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 11px;
+  border: 1px solid var(--line-hairline);
+  background: rgba(235, 226, 206, 0.02);
+  color: var(--ink-secondary);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  transition: border-color 0.2s ease, color 0.2s ease, background-color 0.2s ease;
+}
+
+.util-btn:hover {
+  border-color: var(--line-strong);
+  color: var(--ink-primary);
+}
+
+.util-btn.is-active {
+  border-color: rgba(70, 134, 181, 0.55);
+  color: #a9d0ec;
+  background: rgba(70, 134, 181, 0.1);
+}
+
+.apu-main {
+  flex: 1;
+  width: 100%;
+  max-width: var(--container-max);
+  margin: 0 auto;
+  padding: clamp(20px, 3vw, 40px) clamp(16px, 3vw, 36px) 84px;
+}
+
+/* ==========================================================================
+   Risk Badges & Stamps
+   ========================================================================== */
+.risk-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 9px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  border: 1px solid currentColor;
+  white-space: nowrap;
+}
+
+.risk-B { color: var(--risk-b); background: rgba(131, 156, 101, 0.09); }
+.risk-C { color: var(--risk-c); background: rgba(211, 160, 65, 0.1); }
+.risk-D { color: var(--risk-d); background: rgba(205, 77, 64, 0.11); }
+.risk-E { color: var(--risk-e); background: rgba(230, 82, 73, 0.18); border-color: rgba(230, 82, 73, 0.72); }
+.risk-X { color: var(--risk-x); background: rgba(235, 226, 206, 0.12); border-color: rgba(235, 226, 206, 0.65); }
+
+.stamp-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  border: 1.5px solid rgba(196, 63, 53, 0.62);
+  color: rgba(226, 107, 98, 0.9);
+  transform: rotate(-2deg);
+}
+
+.stamp-badge.is-verified {
+  border-color: rgba(131, 156, 101, 0.55);
+  color: rgba(167, 194, 134, 0.86);
+  transform: rotate(0deg);
+}
+
+.stamp-badge.is-unverified {
+  border-color: rgba(235, 226, 206, 0.55);
+  color: var(--ink-primary);
+  background: rgba(196, 63, 53, 0.18);
+  transform: rotate(-3deg);
+}
+
+/* Footer */
+.apu-footer {
+  border-top: 1px solid var(--line-hairline);
+  background: rgba(8, 9, 7, 0.8);
+  padding: 28px clamp(16px, 3vw, 36px);
+}
+
+.apu-footer-inner {
+  max-width: var(--container-max);
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--ink-muted);
+  letter-spacing: 0.08em;
+}
+
+.footer-strobe-bar {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.footer-strobe-pip {
+  width: 24px;
+  height: 3px;
+  background: linear-gradient(90deg, var(--strobe-red) 50%, var(--strobe-blue) 50%);
+}
+
+@media (max-width: 860px) {
+  .apu-header {
+    height: auto;
+    padding: 10px 0;
+  }
+  .apu-header-inner {
+    flex-wrap: wrap;
+    row-gap: 10px;
+  }
+  .apu-nav {
+    order: 3;
+    width: 100%;
+    justify-content: stretch;
+  }
+  .apu-nav-btn {
+    flex: 1;
+    justify-content: center;
+    padding: 7px 8px;
+    font-size: 12px;
+  }
+  .util-btn span {
+    display: none;
+  }
+}
